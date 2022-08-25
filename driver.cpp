@@ -163,14 +163,14 @@ void enable_peer_access() {
     int ngpu = num_devices();
     // first check that peer-peer access is possible for each device
     std::cout << ngpu << " gpus with peer-connectivity matrix:\n\n";
-    std::cout << "  ";
+    std::cout << ":  ";
     for (int i=0; i<ngpu; ++i) {
         std::cout << " " << i;
     }
     std::cout << "\n";
     bool good = true;
     for (int device=0; device<ngpu; ++device) {
-        std::cout << " " << device;
+        std::cout << ": " << device;
         for (int peer=0; peer<ngpu; ++peer) {
             int can;
             check_api_call(cudaDeviceCanAccessPeer(&can, device, peer));
