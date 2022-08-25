@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits>
 #include <vector>
 
 #include <cuda_stream.hpp>
@@ -86,12 +87,16 @@ int main(int argc, const char** argv) {
         std::printf( "%16u ", kb);
 
         for (auto dst=0; dst<ngpu; dst++) {
-            auto start = stream.enqueue_event();
-            copy<char>(srcbuf[0], dstbuf[dst], n, mode,  stream);
-            auto stop = stream.enqueue_event();
-            stop.wait();
+            double time = std::numeric_limits<double>::max();
+            // run test multiple times and take the best
+            for (int i=0; i<8; ++i) {
+                auto start = stream.enqueue_event();
+                copy<char>(srcbuf[0], dstbuf[dst], n, mode,  stream);
+                auto stop = stream.enqueue_event();
+                stop.wait();
+                time = std::min(stop.time_since(start), time);
+            }
 
-            auto time = stop.time_since(start);
             float bw = gb/time;
             std::printf(" %10.2f", bw);
         }
